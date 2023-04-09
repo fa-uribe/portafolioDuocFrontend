@@ -1,12 +1,12 @@
-import React from "react";
-import Constants from 'expo-constants';
-import { Text, View } from 'react-native';
+import React from "react"
+import { Text, View } from 'react-native'
 import SubjectList from './SubjectList.jsx'
+import UserList from "./UserList.jsx"
 
 const Main = () => {
     return (
         <View>
-            <SubjectList />
+            <UserList />
         </View>
     )
 }
