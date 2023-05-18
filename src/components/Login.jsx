@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, StyleSheet, Text, Button } from 'react-native';
+import { View, TextInput, TouchableOpacity, StyleSheet, Text, Button, Image } from 'react-native';
 import axios from 'axios';
 
 const LoginScreen = ({ navigation }) => {
@@ -31,6 +31,8 @@ const LoginScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.title}>MyEstCalendar</Text>
+      <Image style={styles.logo} source={require('../../assets/logo.png')} />
       <TextInput
         style={styles.input}
         placeholder="Email"
@@ -59,6 +61,19 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  logo: {
+    width: 150,
+    height: 150,
+    resizeMode: 'contain',
+    alignSelf: 'center',
+    marginBottom: 20,
   },
   input: {
     height: 40,
