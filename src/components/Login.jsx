@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, Alert, StyleSheet, Image, Text } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { View, TextInput, TouchableOpacity, StyleSheet, Text, Button } from 'react-native';
 import axios from 'axios';
 
-const LoginScreen = () => {
-  const navigation = useNavigation();
+const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -19,24 +17,39 @@ const LoginScreen = () => {
     }
   };
 
+  const handleRegister = () => {
+    navigation.navigate('Register');
+  };
+
+  const handleEmailChange = (text) => {
+    setEmail(text);
+  };
+
+  const handlePasswordChange = (text) => {
+    setPassword(text);
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>MyEstCalendar</Text>
-      <Image style={styles.logo} source={require('../../assets/logo.png')} />
       <TextInput
         style={styles.input}
-        placeholder="Correo electrónico"
+        placeholder="Email"
+        keyboardType="email-address"
         value={email}
-        onChangeText={text => setEmail(text)}
+        onChangeText={handleEmailChange}
       />
       <TextInput
         style={styles.input}
         placeholder="Contraseña"
         secureTextEntry
         value={password}
-        onChangeText={text => setPassword(text)}
+        onChangeText={handlePasswordChange}
       />
       <Button title="Iniciar sesión" onPress={handleLogin} />
+
+      <TouchableOpacity onPress={handleRegister}>
+        <Text style={styles.linkText}>Registrarse</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -47,19 +60,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 20,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  logo: {
-    width: 150,
-    height: 150,
-    resizeMode: 'contain',
-    alignSelf: 'center',
-    marginBottom: 20,
-  },
   input: {
     height: 40,
     borderColor: 'gray',
@@ -67,6 +67,19 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingHorizontal: 10,
   },
+  buttonText: {
+    textAlign: 'center',
+    color: 'white',
+    backgroundColor: 'blue',
+    paddingVertical: 10,
+    fontSize: 16,
+  },
+  linkText: {
+    textAlign: 'center',
+    color: 'blue',
+    fontSize: 16,
+  },
 });
 
 export default LoginScreen;
+
