@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Calendar } from 'react-native-calendars';
+import { Calendar, Agenda } from 'react-native-calendars';
 import { StyleSheet } from 'react-native';
+import AgendaComponent from './Agenda.jsx'
 
 const CalendarComponent = ({ markedDates, onDayPress }) => {
   const [selected, setSelected] = useState(new Date().toISOString().slice(0, 10));
@@ -12,7 +13,7 @@ const CalendarComponent = ({ markedDates, onDayPress }) => {
       current={selected}
       onDayPress={(day) => {
         setSelected(day.dateString);
-        onDayPress(day);
+        onDayPress(AgendaComponent);
       }}
     />
   );

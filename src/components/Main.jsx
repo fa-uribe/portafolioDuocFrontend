@@ -1,11 +1,8 @@
 import React from "react"
 import { Text, View, StyleSheet } from 'react-native'
 import { useState } from "react"
-import SubjectList from './SubjectList.jsx'
-import UserList from "./UserList.jsx"
 import Calendar from './Calendar.jsx'
 import Agenda from './Agenda.jsx'
-import generateItems from '../data/testItems.js'
 
 const Main = () => {
     const [items, setItems] = useState({});

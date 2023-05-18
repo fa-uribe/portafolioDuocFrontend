@@ -12,7 +12,7 @@ class AgendaScreen extends Component {
   }
 
   componentDidMount() {
-    // Simulamos una petición a una API para obtener los eventos
+  
     setTimeout(() => {
       const events = {
         '2022-05-12': [
