@@ -43,7 +43,7 @@ class AgendaScreen extends Component {
         items: items,
         isLoading: false,
       });
-    }, 1000);
+    }, 10);
   }
 
   render() {

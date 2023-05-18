@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, StyleSheet, Text, Button, Image } from 'react-native';
+import { View, TextInput, TouchableOpacity, StyleSheet, Text, Button, Image, Alert } from 'react-native';
 import axios from 'axios';
 
 const LoginScreen = ({ navigation }) => {
@@ -48,7 +48,8 @@ const LoginScreen = ({ navigation }) => {
         onChangeText={handlePasswordChange}
       />
       <Button title="Iniciar sesión" onPress={handleLogin} />
-
+      <Text> </Text>
+      <Text style={styles.registerText}>¿No tienes cuenta aún?</Text>
       <TouchableOpacity onPress={handleRegister}>
         <Text style={styles.linkText}>Registrarse</Text>
       </TouchableOpacity>
@@ -57,6 +58,10 @@ const LoginScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  registerText:{
+    alignSelf: 'center',
+    justifyContent: 'center'
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
@@ -69,8 +74,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   logo: {
-    width: 150,
-    height: 150,
+    width: 100,
+    height: 100,
     resizeMode: 'contain',
     alignSelf: 'center',
     marginBottom: 20,
