@@ -19,12 +19,23 @@ const RegisterScreen = () => {
       });
   }, []);
 
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const handleRegister = async () => {
     try {
         if (!email || !password || !career) {
             Alert.alert('Error', 'Por favor, completa todos los campos');
             return;
         }
+
+        if (!validateEmail(email)) {
+            Alert.alert('Error', 'Por favor, ingresa un email válido');
+            return;
+        }
+
         else {
             const registerUser = await axios.post('http://localhost:8080/myEstCalendarAPI/auth/signup', { username, email, password, career });
             
@@ -69,7 +80,7 @@ const RegisterScreen = () => {
         >
         <Picker.Item label="Selecciona una carrera" value="" />
         {careersList.map(career => (
-            <Picker.Item key={career._id} label={career.career_name} value={career._id} />
+            <Picker.Item key={career._id} label={career.career_name} value={career.career_name} />
         ))}
       </Picker>
       <Button title="Registrarse" onPress={handleRegister} />
