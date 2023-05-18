@@ -2,7 +2,8 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import LoginScreen from './src/components/Login.jsx';
-import CalendarComponent from './src/components/Calendar.jsx';
+import MainComponent from './src/components/Main.jsx';
+
 import { createStackNavigator } from '@react-navigation/stack';
 
 const Stack = createStackNavigator();
@@ -12,7 +13,7 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="Calendar" component={CalendarComponent} />
+        <Stack.Screen name="Main" component={MainComponent} />
       </Stack.Navigator>
     </NavigationContainer>
   );

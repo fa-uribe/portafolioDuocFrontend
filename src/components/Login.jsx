@@ -13,7 +13,7 @@ const LoginScreen = () => {
       const response = await axios.post('http://localhost:8080/myEstCalendarAPI/auth/signin', { email, password });
       const token = response.data.token;
       
-      navigation.navigate('Calendar');
+      navigation.navigate('Main');
     } catch (error) {
       Alert.alert('Error', 'Invalid credentials');
     }
