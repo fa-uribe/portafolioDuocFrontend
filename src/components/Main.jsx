@@ -1,47 +1,40 @@
-import React from "react"
-import { Text, View, StyleSheet } from 'react-native'
-import { useState } from "react"
-import Calendar from './Calendar.jsx'
-import Agenda from './Agenda.jsx'
+import React, { useState, useRef } from "react"
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
+import { LocaleConfig } from 'react-native-calendars';
+import { Calendar, Agenda } from 'react-native-calendars';
+import { Card } from 'react-native-paper';
+import moment from "moment/moment";
+import AgendaScreen from "./AgendaScreen.jsx";
 
 const Main = () => {
-    const [items, setItems] = useState({});
 
-    const onDayPress = (day) => {
-      const newItems = { ...items };
-      newItems[day.dateString] = [
-        {
-          name: 'Item 1',
-          time: '10:00',
-          description: 'Description for Item 1',
-        },
-        {
-          name: 'Item 2',
-          time: '12:00',
-          description: 'Description for Item 2',
-        },
-        {
-          name: 'Item 3',
-          time: '14:00',
-          description: 'Description for Item 3',
-        },
-      ];
-      setItems(newItems);
-    };
-  
-    return (
-      <View style={styles.container}>
-        <Calendar onDayPress={onDayPress} />
-        <Agenda items={items} />
-      </View>
-    );
-  }
-  
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#fff',
-    },
-  });
+  LocaleConfig.locales['es'] = {
+    formatAccessibilityLabel: "dddd d 'de' MMMM 'del' yyyy",
+    monthNames: [
+      'Enero',
+      'Febrero',
+      'Marzo',
+      'Abril',
+      'Mayo',
+      'Junio',
+      'Julio',
+      'Augosto',
+      'Septiembre',
+      'Octubre',
+      'Noviembre',
+      'Diciembre'
+    ],
+    monthNamesShort: ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'],
+    dayNames: ['Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'],
+    dayNamesShort: ['D', 'L', 'M', 'Mi', 'J', 'V', 'S'],
+    // numbers: ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'] // number localization example
+  };
+  LocaleConfig.defaultLocale = 'es';
+
+
+  return (
+    <AgendaScreen />
+  );
+};
 
 export default Main;
