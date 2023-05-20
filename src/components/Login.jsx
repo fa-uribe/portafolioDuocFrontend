@@ -7,13 +7,20 @@ const LoginScreen = ({ navigation }) => {
   const [password, setPassword] = useState('');
 
   const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert('Error', 'Por favor ingresa un correo electrónico y contraseña');
+      return;
+    }
+
     try {
       const response = await axios.post('http://localhost:8080/myEstCalendarAPI/auth/signin', { email, password });
       const token = response.data.token;
       
       navigation.navigate('Main');
+      setEmail('');
+      setPassword('');
     } catch (error) {
-      Alert.alert('Error', 'Invalid credentials');
+      Alert.alert('Error', error.response.data.error);
     }
   };
 
