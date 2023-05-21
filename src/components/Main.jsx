@@ -1,8 +1,8 @@
 import React, { useState, useContext, useEffect } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Modal, BackHandler, Alert } from 'react-native';
 import moment from "moment/moment";
-import CalendarScreen from "./CalendarScreen";
-import CrearEventoForm from "./CrearEvento";
+import CalendarScreen from "./CalendarScreen.jsx";
+import CrearEventoForm from "./CreateEvent.jsx";
 import UserContext from "../data/userContext.js";
 import { useFocusEffect } from '@react-navigation/native';
 import { AsyncStorage } from 'react-native';
