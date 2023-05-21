@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, TextInput, Button, StyleSheet, Picker, Alert } from 'react-native';
-import axios from 'axios';
+import axios from '../data/apiConfig.js';
 
 const RegisterScreen = () => {
   const [username, setUsername] = useState('');

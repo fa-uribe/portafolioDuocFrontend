@@ -1,10 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, TextInput, TouchableOpacity, StyleSheet, Text, Button, Image, Alert } from 'react-native';
 import axios from 'axios';
-
-const LoginScreen = ({ navigation }) => {
+import { AsyncStorage } from 'react-native';
+import { Platform } from 'react-native';
+import UserContext from '../data/userContext.js'
+;
+const LoginScreen = ({ updateUser, navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  const userContext = useContext(UserContext);
+
+  const isWeb = Platform.OS === 'web';
+  const storage = isWeb ? localStorage : AsyncStorage;
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -15,12 +23,15 @@ const LoginScreen = ({ navigation }) => {
     try {
       const response = await axios.post('http://localhost:8080/myEstCalendarAPI/auth/signin', { email, password });
       const token = response.data.token;
+      const userData = response.data.userData[0];
+      await storage.setItem('token', token);
+      userContext.updateUser(userData);
       
       navigation.navigate('Main');
       setEmail('');
       setPassword('');
     } catch (error) {
-      Alert.alert('Error', error.response.data.error);
+      Alert.alert('Error', 'Invalid credentials');
     }
   };
 
@@ -109,4 +120,3 @@ const styles = StyleSheet.create({
 });
 
 export default LoginScreen;
-
