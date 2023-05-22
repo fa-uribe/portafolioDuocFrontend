@@ -1,16 +1,49 @@
 import React, { useState, useContext, useEffect } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Modal, BackHandler, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Modal, BackHandler, Alert, ScrollView } from 'react-native';
+import { AsyncStorage } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import moment from "moment/moment";
+import axios from "../data/apiConfig.js";
+
+import UserContext from "../data/userContext.js";
 import CalendarScreen from "./CalendarScreen.jsx";
 import CrearEventoForm from "./CreateEvent.jsx";
-import UserContext from "../data/userContext.js";
-import { useFocusEffect } from '@react-navigation/native';
-import { AsyncStorage } from 'react-native';
+import EventCard from "./EventCard.jsx";
 
 const Main = ({ navigation }) => {
   const { user, updateUser } = useContext(UserContext)
   const [isModalVisible, setModalVisible] = useState(false);
   const [eventData, setEventData] = useState(null);
+  const [eventos, setEventos] = useState([]);
+  const [eventosDelDia, setEventosDelDia] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(null);
+
+  useEffect(() => {
+    obtenerEventos();
+  }, []);
+
+  const obtenerEventos = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/myEstCalendarAPI/user/getEvents');
+      const eventosData = response.data;
+  
+      setEventos(eventosData);
+  
+      // Actualiza los marcadores en el calendario
+      const updatedMarkedDates = {};
+      eventosData.forEach((evento) => {
+        const date = moment(evento.start_date).format('YYYY-MM-DD'); 
+        updatedMarkedDates[date] = {
+          marked: true,
+          dotColor: 'blue', 
+          evento: evento, 
+        };
+      });
+      setMarkedDates(updatedMarkedDates);
+    } catch (error) {
+      console.log('Error al obtener eventos:', error);
+    }
+  };
 
   const handleCrearEvento = () => {
     setModalVisible(true);
@@ -71,11 +104,46 @@ const Main = ({ navigation }) => {
     navigation.navigate('Login');
   };
 
+  const handleDayPress = (selected) => {
+    const fechaSeleccionada = selected.dateString;
+    setSelectedDate(fechaSeleccionada);
+    obtenerEventosDelDia(fechaSeleccionada);
+  };
+  
+  const obtenerEventosDelDia = async (fechaSeleccionada) => {
+    if (!fechaSeleccionada) {
+      setEventosDelDia([]);
+      return;
+    }
+  
+    try {
+      const response = await axios.get(`http://localhost:8080/myEstCalendarAPI/user/getDailyEvents/${fechaSeleccionada}`);
+      const eventosDelDia = response.data;
+      console.log(eventosDelDia);
+      console.log(fechaSeleccionada);
+      setEventosDelDia(eventosDelDia);
+    } catch (error) {
+      console.log('Error al obtener eventos del día:', error);
+      setEventosDelDia([]);
+    }
+  };
+  
+
   return (
     <View style={styles.container}>
-      <Text>Bienvenido, {user && user.username}</Text>
-      <Text style={styles.title}>Mi calendario</Text>
-      <CalendarScreen />
+      <ScrollView style={styles.eventosContainer}>
+        <Text>Bienvenido, {user && user.username}</Text>
+
+        <CalendarScreen eventos={eventos} onDayPress={handleDayPress} />
+        {eventosDelDia.length > 0 ? (
+          eventosDelDia.map((evento) => (
+            <EventCard key={evento._id} evento={evento} />
+          ))
+        ) : (
+          <Text>No hay eventos para esta fecha.</Text>
+        )}
+      </ScrollView>
+
       <View style={styles.buttonContainer}>
         <TouchableOpacity onPress={handleCrearEvento} style={styles.button}>
           <Text style={styles.buttonText}>Crear evento</Text>
@@ -99,6 +167,16 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 16,
     marginBottom: 8,
+  },
+  eventosContainer: {
+    flex: 1,
+    marginTop: 15,
+    paddingHorizontal: 16,
+  },
+  eventoCard: {
+    backgroundColor: '#f0f0f0',
+    padding: 10,
+    marginBottom: 10,
   },
   buttonContainer: {
     position: 'absolute',

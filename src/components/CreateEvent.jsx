@@ -29,7 +29,6 @@ const CrearEventoForm = ({ onClose, onSubmit }) => {
   };
 
   const handleFormSubmit = () => {
-    // Lógica para enviar el formulario y crear el evento
     const evento = {
       nombre,
       descripcion,
@@ -37,15 +36,13 @@ const CrearEventoForm = ({ onClose, onSubmit }) => {
       fechaFin,
     };
 
-    // Llamar a la función onSubmit para pasar los datos del evento al componente padre
     onSubmit(evento);
 
-    // Cerrar el modal o navegar a la página anterior
     onClose();
   };
 
   const handleCancel = () => {
-    onClose(); // Cerrar el modal
+    onClose(); 
   };
 
   return (
