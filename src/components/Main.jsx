@@ -17,6 +17,7 @@ const Main = ({ navigation }) => {
   const [eventos, setEventos] = useState([]);
   const [eventosDelDia, setEventosDelDia] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
+  const [markedDates, setMarkedDates] = useState({});
 
   useEffect(() => {
     obtenerEventos();
@@ -29,7 +30,6 @@ const Main = ({ navigation }) => {
   
       setEventos(eventosData);
   
-      // Actualiza los marcadores en el calendario
       const updatedMarkedDates = {};
       eventosData.forEach((evento) => {
         const date = moment(evento.start_date).format('YYYY-MM-DD'); 
@@ -127,20 +127,20 @@ const Main = ({ navigation }) => {
       setEventosDelDia([]);
     }
   };
-  
 
   return (
     <View style={styles.container}>
       <ScrollView style={styles.eventosContainer}>
-        <Text>Bienvenido, {user && user.username}</Text>
+        <Text style={{textAlign: 'center', marginBottom: 5}}>Bienvenido, {user && user.username}</Text>
 
         <CalendarScreen eventos={eventos} onDayPress={handleDayPress} />
+
         {eventosDelDia.length > 0 ? (
           eventosDelDia.map((evento) => (
             <EventCard key={evento._id} evento={evento} />
           ))
         ) : (
-          <Text>No hay eventos para esta fecha.</Text>
+          <Text style={{marginTop: 8}}>No hay eventos para esta fecha.</Text>
         )}
       </ScrollView>
 

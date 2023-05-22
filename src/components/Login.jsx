@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { View, TextInput, TouchableOpacity, StyleSheet, Text, Button, Image, Alert } from 'react-native';
-import axios from 'axios';
+import axios from '../data/apiConfig.js';
 import { AsyncStorage } from 'react-native';
 import { Platform } from 'react-native';
 import UserContext from '../data/userContext.js'
