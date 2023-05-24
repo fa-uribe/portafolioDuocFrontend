@@ -1,31 +1,29 @@
 import React, { useState } from 'react';
 import { View, TextInput, TouchableOpacity, Text, StyleSheet } from 'react-native';
-import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 const CrearEventoForm = ({ onClose, onSubmit }) => {
   const [nombre, setNombre] = useState('');
   const [descripcion, setDescripcion] = useState('');
   const [fechaInicio, setFechaInicio] = useState(null);
   const [fechaFin, setFechaFin] = useState(null);
-  const [isDatePickerVisible, setDatePickerVisible] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDateType, setSelectedDateType] = useState('');
 
-  const showDatePicker = (dateType) => {
-    setDatePickerVisible(true);
+  const showDatepicker = (dateType) => {
+    setShowDatePicker(true);
     setSelectedDateType(dateType);
   };
 
-  const hideDatePicker = () => {
-    setDatePickerVisible(false);
-  };
-
-  const handleConfirm = (date) => {
-    if (selectedDateType === 'inicio') {
-      setFechaInicio(date);
-    } else {
-      setFechaFin(date);
+  const handleDateChange = (event, selectedDate) => {
+    setShowDatePicker(false);
+    if (selectedDate) {
+      if (selectedDateType === 'inicio') {
+        setFechaInicio(selectedDate);
+      } else {
+        setFechaFin(selectedDate);
+      }
     }
-    hideDatePicker();
   };
 
   const handleFormSubmit = () => {
@@ -42,7 +40,7 @@ const CrearEventoForm = ({ onClose, onSubmit }) => {
   };
 
   const handleCancel = () => {
-    onClose(); 
+    onClose();
   };
 
   return (
@@ -60,7 +58,7 @@ const CrearEventoForm = ({ onClose, onSubmit }) => {
         onChangeText={setDescripcion}
       />
       <View>
-        <TouchableOpacity style={styles.button} onPress={() => showDatePicker('inicio')}>
+        <TouchableOpacity style={styles.button} onPress={() => showDatepicker('inicio')}>
           <Text style={styles.buttonText}>Seleccionar fecha de inicio</Text>
         </TouchableOpacity>
         {fechaInicio && (
@@ -71,7 +69,7 @@ const CrearEventoForm = ({ onClose, onSubmit }) => {
             editable={false}
           />
         )}
-        <TouchableOpacity style={styles.button} onPress={() => showDatePicker('fin')}>
+        <TouchableOpacity style={styles.button} onPress={() => showDatepicker('fin')}>
           <Text style={styles.buttonText}>Seleccionar fecha de fin</Text>
         </TouchableOpacity>
         {fechaFin && (
@@ -91,12 +89,15 @@ const CrearEventoForm = ({ onClose, onSubmit }) => {
           <Text style={styles.buttonText}>Cancelar</Text>
         </TouchableOpacity>
       </View>
-      <DateTimePickerModal
-        isVisible={isDatePickerVisible}
-        mode="datetime"
-        onConfirm={handleConfirm}
-        onCancel={hideDatePicker}
-      />
+      {showDatePicker && (
+        <DateTimePicker
+          value={new Date()}
+          mode="datetime"
+          is24Hour={true}
+          display="default"
+          onChange={handleDateChange}
+        />
+      )}
     </View>
   );
 };
