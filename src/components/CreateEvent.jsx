@@ -23,11 +23,20 @@ const CrearEventoForm = ({ onClose, onSubmit, selectedDate }) => {
       const request = await axios.post('http://localhost:8080/myEstCalendarAPI/user/createEvent', evento);
 
       onSubmit(evento);
-
+      Alert.alert(
+        'Evento creado',
+        `Se ha creado el evento "${evento.event_name}" para la fecha ${evento.event_date}.`,
+        [{ text: 'OK' }]
+      );
       onClose();
     }
     catch(error){
       console.log('Error al crear el evento:', error);
+      Alert.alert(
+        'Error',
+        'Ha ocurrido un error al crear el evento. Por favor, inténtalo nuevamente.',
+        [{ text: 'OK' }]
+      );
     }
   };
 
