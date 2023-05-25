@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Modal, BackHandler, Alert, ScrollView } from 'react-native';
-import { AsyncStorage } from 'react-native';
+import { AsyncStorage } from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import moment from "moment/moment";
 import axios from "../data/apiConfig.js";
@@ -32,7 +32,7 @@ const Main = ({ navigation }) => {
   
       const updatedMarkedDates = {};
       eventosData.forEach((evento) => {
-        const date = moment(evento.start_date).format('YYYY-MM-DD'); 
+        const date = moment(evento.event_date).format('YYYY-MM-DD'); 
         updatedMarkedDates[date] = {
           marked: true,
           dotColor: 'blue', 
@@ -146,12 +146,14 @@ const Main = ({ navigation }) => {
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity onPress={handleCrearEvento} style={styles.button}>
-          <Text style={styles.buttonText}>Crear evento</Text>
+          <Text style={styles.buttonText} >
+            {selectedDate ? `Crear evento para ${selectedDate}` : "Agregar evento"}
+          </Text>
         </TouchableOpacity>
       </View>
 
       <Modal visible={isModalVisible} animationType="slide">
-        <CrearEventoForm onClose={closeModal} onSubmit={handleFormSubmit} />
+        <CrearEventoForm onClose={closeModal} onSubmit={handleFormSubmit} selectedDate={selectedDate} />
       </Modal>
     </View>
   );

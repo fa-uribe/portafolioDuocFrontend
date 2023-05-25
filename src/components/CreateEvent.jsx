@@ -1,50 +1,45 @@
 import React, { useState } from 'react';
 import { View, TextInput, TouchableOpacity, Text, StyleSheet } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import axios from '../data/apiConfig.js';
 
-const CrearEventoForm = ({ onClose, onSubmit }) => {
+
+const CrearEventoForm = ({ onClose, onSubmit, selectedDate }) => {
   const [nombre, setNombre] = useState('');
   const [descripcion, setDescripcion] = useState('');
-  const [fechaInicio, setFechaInicio] = useState(null);
-  const [fechaFin, setFechaFin] = useState(null);
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [selectedDateType, setSelectedDateType] = useState('');
+  const [horaInicio, setHoraInicio] = useState('');
+  const [horaFin, setHoraFin] = useState('');
 
-  const showDatepicker = (dateType) => {
-    setShowDatePicker(true);
-    setSelectedDateType(dateType);
-  };
 
-  const handleDateChange = (event, selectedDate) => {
-    setShowDatePicker(false);
-    if (selectedDate) {
-      if (selectedDateType === 'inicio') {
-        setFechaInicio(selectedDate);
-      } else {
-        setFechaFin(selectedDate);
-      }
+  const handleFormSubmit = async () =>{
+    try{
+      const evento = {
+        event_name: nombre,
+        description: descripcion,
+        event_date: formattedDate,
+        start_hour: horaInicio,
+        end_hour: horaFin,
+      };
+
+      const request = await axios.post('http://localhost:8080/myEstCalendarAPI/user/createEvent', evento);
+
+      onSubmit(evento);
+
+      onClose();
     }
-  };
-
-  const handleFormSubmit = () => {
-    const evento = {
-      nombre,
-      descripcion,
-      fechaInicio,
-      fechaFin,
-    };
-
-    onSubmit(evento);
-
-    onClose();
+    catch(error){
+      console.log('Error al crear el evento:', error);
+    }
   };
 
   const handleCancel = () => {
     onClose();
   };
 
+  const formattedDate = selectedDate ?? '';
+
   return (
     <View style={styles.container}>
+      <Text style={styles.title}>Creando evento para {formattedDate}</Text>
       <TextInput
         style={styles.input}
         placeholder="Nombre del evento"
@@ -57,30 +52,18 @@ const CrearEventoForm = ({ onClose, onSubmit }) => {
         value={descripcion}
         onChangeText={setDescripcion}
       />
-      <View>
-        <TouchableOpacity style={styles.button} onPress={() => showDatepicker('inicio')}>
-          <Text style={styles.buttonText}>Seleccionar fecha de inicio</Text>
-        </TouchableOpacity>
-        {fechaInicio && (
-          <TextInput
-            style={styles.input}
-            placeholder="Fecha de inicio"
-            value={fechaInicio.toISOString()}
-            editable={false}
-          />
-        )}
-        <TouchableOpacity style={styles.button} onPress={() => showDatepicker('fin')}>
-          <Text style={styles.buttonText}>Seleccionar fecha de fin</Text>
-        </TouchableOpacity>
-        {fechaFin && (
-          <TextInput
-            style={styles.input}
-            placeholder="Fecha fin"
-            value={fechaFin.toISOString()}
-            editable={false}
-          />
-        )}
-      </View>
+      <TextInput
+        style={styles.input}
+        placeholder="Hora de inicio (ej. 10:00)"
+        value={horaInicio}
+        onChangeText={setHoraInicio}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Hora de fin (ej. 12:30)"
+        value={horaFin}
+        onChangeText={setHoraFin}
+      />
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.submitButton} onPress={handleFormSubmit}>
           <Text style={styles.buttonText}>Crear evento</Text>
@@ -89,15 +72,6 @@ const CrearEventoForm = ({ onClose, onSubmit }) => {
           <Text style={styles.buttonText}>Cancelar</Text>
         </TouchableOpacity>
       </View>
-      {showDatePicker && (
-        <DateTimePicker
-          value={new Date()}
-          mode="datetime"
-          is24Hour={true}
-          display="default"
-          onChange={handleDateChange}
-        />
-      )}
     </View>
   );
 };
@@ -106,6 +80,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+  },
+  title: {
+    fontSize: 19,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginTop: 16,
+    marginBottom: 8,
   },
   input: {
     marginBottom: 16,
@@ -118,13 +99,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     marginTop: 16,
-  },
-  button: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    backgroundColor: '#ccc',
-    borderRadius: 5,
-    marginBottom: 10,
   },
   submitButton: {
     paddingVertical: 10,

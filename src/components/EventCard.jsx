@@ -1,13 +1,12 @@
 import React from "react";
 import { View, Text, StyleSheet } from 'react-native';
-import moment from 'moment';
 
 const EventCard = ({ evento }) => {
     return (
       <View key={evento._id} style={styles.card}>
         <Text>{evento.event_name}</Text>
         <Text>{evento.description}</Text>
-        <Text>{moment(evento.start_date).format('HH:mm')} - {moment(evento.end_date).format('HH:mm')}</Text>
+        <Text>{evento.start_hour} - {evento.end_hour}</Text>
       </View>
     );
   };
