@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { View, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import axios from '../data/apiConfig.js';
+import axios, { API_URL } from '../data/apiConfig.js';
 
-const RegisterScreen = () => {
+const RegisterScreen = ({navigation}) => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -11,7 +11,7 @@ const RegisterScreen = () => {
   const [careersList, setCareersList] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:8080/myEstCalendarAPI/career/careerList')
+    axios.get(`${API_URL}/career/careerList`)
       .then(response => {
         setCareersList(response.data);
       })
@@ -38,7 +38,7 @@ const RegisterScreen = () => {
         }
 
         else {
-            const registerUser = await axios.post('http://localhost:8080/myEstCalendarAPI/auth/signup', { username, email, password, career });
+            const registerUser = await axios.post(`${API_URL}/auth/signup`, { username, email, password, career });
             
             navigation.navigate('Main');
             setUsername('');
@@ -48,7 +48,7 @@ const RegisterScreen = () => {
         }
  
     } catch (error) {
-        Alert.alert('Error', 'Invalid credentials');
+        Alert.alert('Error', error);
     }
   };
 

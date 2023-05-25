@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { View, TextInput, TouchableOpacity, StyleSheet, Text, Button, Image, Alert } from 'react-native';
-import axios from '../data/apiConfig.js';
-import { AsyncStorage } from '@react-native-async-storage/async-storage';
+import axios, { API_URL } from '../data/apiConfig.js';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 import UserContext from '../data/userContext.js'
 ;
@@ -19,9 +19,8 @@ const LoginScreen = ({ updateUser, navigation }) => {
       Alert.alert('Error', 'Por favor ingresa un correo electrónico y contraseña');
       return;
     }
-
-    try {
-      const response = await axios.post('http://localhost:8080/myEstCalendarAPI/auth/signin', { email, password });
+    try{
+      const response = await axios.post(`${API_URL}/auth/signin`, { email, password });
       const token = response.data.token;
       const userData = response.data.userData[0];
       await storage.setItem('token', token);
@@ -30,10 +29,12 @@ const LoginScreen = ({ updateUser, navigation }) => {
       navigation.navigate('Main');
       setEmail('');
       setPassword('');
-    } catch (error) {
-      Alert.alert('Error', 'Invalid credentials');
+
     }
-  };
+    catch(error){
+      Alert.alert('error', error);
+    }
+  }
 
   const handleRegister = () => {
     navigation.navigate('Register');

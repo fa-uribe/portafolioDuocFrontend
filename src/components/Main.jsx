@@ -1,14 +1,15 @@
 import React, { useState, useContext, useEffect } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Modal, BackHandler, Alert, ScrollView } from 'react-native';
-import { AsyncStorage } from '@react-native-async-storage/async-storage';
-import { useFocusEffect } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { CommonActions } from '@react-navigation/native';
+
 import moment from "moment/moment";
-import axios from "../data/apiConfig.js";
+import axios, { API_URL } from "../data/apiConfig.js";
 
 import UserContext from "../data/userContext.js";
 import CalendarScreen from "./CalendarScreen.jsx";
 import CrearEventoForm from "./CreateEvent.jsx";
-import EventCard from "./EventCard.jsx";
+import EventList from './EventList.jsx';
 
 const Main = ({ navigation }) => {
   const { user, updateUser } = useContext(UserContext)
@@ -23,9 +24,36 @@ const Main = ({ navigation }) => {
     obtenerEventos();
   }, []);
 
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (isModalVisible) {
+        closeModal();
+        return true;
+      } else {
+        Alert.alert(
+          'Cerrar sesión',
+          '¿Estás seguro de que deseas cerrar sesión?',
+          [
+            { text: 'Cancelar', style: 'cancel' },
+            {
+              text: 'Salir',
+              onPress: () => {
+                signOut();
+              },
+            },
+          ],
+          { cancelable: false }
+        );
+        return true;
+      }
+    });
+
+    return () => backHandler.remove();
+  }, [isModalVisible]);
+
   const obtenerEventos = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/myEstCalendarAPI/user/getEvents');
+      const response = await axios.get(`${API_URL}/user/getEvents`);
       const eventosData = response.data;
   
       setEventos(eventosData);
@@ -58,41 +86,6 @@ const Main = ({ navigation }) => {
     setModalVisible(false);
   };
 
-  const onBackPress = () => {
-    Alert.alert(
-      "Cerrar sesión",
-      "¿Estás seguro de que deseas cerrar sesión?",
-      [
-        { text: "Cancelar", onPress: () => null, style: "cancel" },
-        { text: "Salir", onPress: () => signOut() },
-      ],
-      { cancelable: false }
-    );
-    return true;
-  };
-
-  useEffect(() => {
-    const backHandler = BackHandler.addEventListener("hardwareBackPress", onBackPress);
-
-    return () => backHandler.remove();
-  }, []);
-
-  useFocusEffect(
-    React.useCallback(() => {
-      navigation.addListener('beforeRemove', (e) => {
-        e.preventDefault();
-        onBackPress();
-      });
-
-      return () => {
-        navigation.removeListener('beforeRemove', (e) => {
-          e.preventDefault();
-          onBackPress();
-        });
-      };
-    }, [])
-  );
-
   const signOut = async () => {
     try {
       await AsyncStorage.clear();
@@ -100,29 +93,35 @@ const Main = ({ navigation }) => {
       console.log('Error al limpiar el almacenamiento:', error);
     }
     updateUser(null);
-
-    navigation.navigate('Login');
+  
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{ name: 'Login' }],
+      })
+    );
   };
 
-  const handleDayPress = (selected) => {
+  const handleDayPress = async (selected) => {
     const fechaSeleccionada = selected.dateString;
     setSelectedDate(fechaSeleccionada);
-    obtenerEventosDelDia(fechaSeleccionada);
+    const eventosDelDia = await fetchEventosDelDia(fechaSeleccionada);
+    setEventosDelDia(eventosDelDia);
   };
   
-  const obtenerEventosDelDia = async (fechaSeleccionada) => {
+  const fetchEventosDelDia = async (fechaSeleccionada) => {
     if (!fechaSeleccionada) {
-      setEventosDelDia([]);
-      return;
+      return [];
     }
   
     try {
-      const response = await axios.get(`http://localhost:8080/myEstCalendarAPI/user/getDailyEvents/${fechaSeleccionada}`);
-      const eventosDelDia = response.data;
-      setEventosDelDia(eventosDelDia);
+      const response = await axios.get(
+        `${API_URL}/user/getDailyEvents/${fechaSeleccionada}`
+      );
+      return response.data;
     } catch (error) {
       console.log('Error al obtener eventos del día:', error);
-      setEventosDelDia([]);
+      return [];
     }
   };
 
@@ -133,13 +132,8 @@ const Main = ({ navigation }) => {
 
         <CalendarScreen eventos={eventos} onDayPress={handleDayPress} />
 
-        {eventosDelDia.length > 0 ? (
-          eventosDelDia.map((evento) => (
-            <EventCard key={evento._id} evento={evento} />
-          ))
-        ) : (
-          <Text style={{marginTop: 8}}>No hay eventos para esta fecha.</Text>
-        )}
+        <EventList eventos={eventosDelDia} />
+
       </ScrollView>
 
       <View style={styles.buttonContainer}>

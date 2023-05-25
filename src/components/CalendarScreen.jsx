@@ -11,7 +11,7 @@ const CalendarScreen = ({ eventos, onDayPress }) => {
       const updatedMarkedDates = {};
 
       eventos.forEach((evento) => {
-        const date = evento.event_date; // Asegúrate de tener la propiedad correcta para la fecha del evento
+        const date = evento.event_date;
         updatedMarkedDates[date] = {
           marked: true,
           dotColor: 'blue', 
@@ -29,7 +29,6 @@ const CalendarScreen = ({ eventos, onDayPress }) => {
   
     const updatedMarkedDates = { ...markedDates };
   
-    // Desmarca la fecha anteriormente seleccionada
     if (selectedDate && updatedMarkedDates[selectedDate]) {
       updatedMarkedDates[selectedDate] = {
         ...updatedMarkedDates[selectedDate],
@@ -37,7 +36,6 @@ const CalendarScreen = ({ eventos, onDayPress }) => {
       };
     }
   
-    // Marca la nueva fecha seleccionada
     updatedMarkedDates[selected] = {
       ...updatedMarkedDates[selected],
       selected: true,

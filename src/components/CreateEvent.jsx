@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, Text, StyleSheet } from 'react-native';
-import axios from '../data/apiConfig.js';
+import { View, TextInput, TouchableOpacity, Text, StyleSheet, Alert } from 'react-native';
+import axios, { API_URL } from '../data/apiConfig.js';
 
 
 const CrearEventoForm = ({ onClose, onSubmit, selectedDate }) => {
@@ -20,7 +20,7 @@ const CrearEventoForm = ({ onClose, onSubmit, selectedDate }) => {
         end_hour: horaFin,
       };
 
-      const request = await axios.post('http://localhost:8080/myEstCalendarAPI/user/createEvent', evento);
+      const request = await axios.post(`${API_URL}/user/createEvent`, evento);
 
       onSubmit(evento);
       Alert.alert(

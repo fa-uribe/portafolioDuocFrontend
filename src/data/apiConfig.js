@@ -1,4 +1,4 @@
-import {AsyncStorage} from '@react-native-async-storage/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { Platform } from 'react-native';
 
@@ -24,3 +24,5 @@ axios.interceptors.request.use(async (config) => {
 });
 
 export default axios;
+
+export const API_URL = 'http://192.168.100.8:8080/myEstCalendarAPI';

@@ -10,7 +10,6 @@ import RegisterScreen from './src/components/Register.jsx';
 
 
 const Stack = createStackNavigator();
-AppRegistry.registerComponent('main', () => App);
 
 const App = () => {
   return (
@@ -25,5 +24,7 @@ const App = () => {
     </UserProvider>
   );
 };
+
+AppRegistry.registerComponent('main', () => App);
 
 export default App;
