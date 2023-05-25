@@ -7,24 +7,60 @@ const CalendarScreen = ({ eventos, onDayPress }) => {
   const [markedDates, setMarkedDates] = useState({});
 
   useEffect(() => {
-    const updatedMarkedDates = {};
+    const setEventMarkers = () => {
+      const updatedMarkedDates = {};
 
-    eventos.forEach((evento) => {
-      const date = evento.start_date; // Asegúrate de tener la propiedad correcta para la fecha del evento
-      updatedMarkedDates[date] = {
-        marked: true,
-        dotColor: 'blue', // Personaliza el color del punto según tus necesidades
-      };
-    });
+      eventos.forEach((evento) => {
+        const date = evento.event_date; // Asegúrate de tener la propiedad correcta para la fecha del evento
+        updatedMarkedDates[date] = {
+          marked: true,
+          dotColor: 'blue', 
+        };
+      });
 
-    setMarkedDates(updatedMarkedDates);
+      setMarkedDates(updatedMarkedDates);
+    };
+
+    setEventMarkers();
   }, [eventos]);
 
   const handleDateSelect = (date) => {
     const selected = date.dateString;
+  
+    const updatedMarkedDates = { ...markedDates };
+  
+    // Desmarca la fecha anteriormente seleccionada
+    if (selectedDate && updatedMarkedDates[selectedDate]) {
+      updatedMarkedDates[selectedDate] = {
+        ...updatedMarkedDates[selectedDate],
+        selected: false,
+      };
+    }
+  
+    // Marca la nueva fecha seleccionada
+    updatedMarkedDates[selected] = {
+      ...updatedMarkedDates[selected],
+      selected: true,
+    };
+  
+    setMarkedDates(updatedMarkedDates);
     setSelectedDate(selected);
     onDayPress(date);
   };
+
+  useEffect(() => {
+    if (selectedDate) {
+      const updatedMarkedDates = {
+        ...markedDates,
+        [selectedDate]: {
+          ...markedDates[selectedDate],
+          selected: true,
+        },
+      };
+      setMarkedDates(updatedMarkedDates);
+    }
+  }, [selectedDate]);
+  
 
   LocaleConfig.locales['es'] = {
     monthNames: [
@@ -73,7 +109,7 @@ const CalendarScreen = ({ eventos, onDayPress }) => {
     backgroundColor: 'lightgray',
     calendarBackground: 'white',
     selectedDayBackgroundColor: 'orange',
-    selectedDayTextColor: 'white',
+    selectedDayTextColor: 'black',
     dotColor: 'red',
     selectedDotColor: 'orange',
     arrowColor: 'black',
@@ -92,7 +128,13 @@ const CalendarScreen = ({ eventos, onDayPress }) => {
   return (
     <View style={{ flex: 1 }}>
       <Calendar
-        markedDates={markedDates}
+        markedDates={{
+          ...markedDates,
+          [selectedDate]: {
+            ...(markedDates[selectedDate] || {}),
+            selected: true,
+          },
+        }}
         onDayPress={handleDateSelect}
         theme={calendarTheme}
         style={{
@@ -101,6 +143,7 @@ const CalendarScreen = ({ eventos, onDayPress }) => {
           borderRadius: 10,
           overflow: 'hidden',
         }}
+        current={selectedDate ?? ''}
       />
     </View>
   );

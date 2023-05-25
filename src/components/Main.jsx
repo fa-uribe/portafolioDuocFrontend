@@ -119,8 +119,6 @@ const Main = ({ navigation }) => {
     try {
       const response = await axios.get(`http://localhost:8080/myEstCalendarAPI/user/getDailyEvents/${fechaSeleccionada}`);
       const eventosDelDia = response.data;
-      console.log(eventosDelDia);
-      console.log(fechaSeleccionada);
       setEventosDelDia(eventosDelDia);
     } catch (error) {
       console.log('Error al obtener eventos del día:', error);
