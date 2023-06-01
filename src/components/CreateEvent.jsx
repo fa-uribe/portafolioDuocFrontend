@@ -2,16 +2,34 @@ import React, { useState } from 'react';
 import { View, TextInput, TouchableOpacity, Text, StyleSheet, Alert } from 'react-native';
 import axios, { API_URL } from '../data/apiConfig.js';
 
-
 const CrearEventoForm = ({ onClose, onSubmit, selectedDate }) => {
   const [nombre, setNombre] = useState('');
   const [descripcion, setDescripcion] = useState('');
   const [horaInicio, setHoraInicio] = useState('');
   const [horaFin, setHoraFin] = useState('');
 
+  const handleFormSubmit = async () => {
+    // Validar el formato de la hora de inicio
+    if (!/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(horaInicio)) {
+      Alert.alert(
+        'Formato incorrecto',
+        'Por favor, ingresa la hora de inicio en el formato HH:MM (ejemplo: 10:00).',
+        [{ text: 'OK' }]
+      );
+      return;
+    }
 
-  const handleFormSubmit = async () =>{
-    try{
+    // Validar el formato de la hora de fin
+    if (!/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(horaFin)) {
+      Alert.alert(
+        'Formato incorrecto',
+        'Por favor, ingresa la hora de fin en el formato HH:MM (ejemplo: 12:30).',
+        [{ text: 'OK' }]
+      );
+      return;
+    }
+
+    try {
       const evento = {
         event_name: nombre,
         description: descripcion,
@@ -29,8 +47,7 @@ const CrearEventoForm = ({ onClose, onSubmit, selectedDate }) => {
         [{ text: 'OK' }]
       );
       onClose();
-    }
-    catch(error){
+    } catch (error) {
       console.log('Error al crear el evento:', error);
       Alert.alert(
         'Error',
@@ -48,10 +65,10 @@ const CrearEventoForm = ({ onClose, onSubmit, selectedDate }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Creando evento para {formattedDate}</Text>
+      <Text style={styles.title}>Creando evento para: {selectedDate}</Text>
       <TextInput
         style={styles.input}
-        placeholder="Nombre del evento"
+        placeholder="Nombre evento"
         value={nombre}
         onChangeText={setNombre}
       />
@@ -63,19 +80,19 @@ const CrearEventoForm = ({ onClose, onSubmit, selectedDate }) => {
       />
       <TextInput
         style={styles.input}
-        placeholder="Hora de inicio (ej. 10:00)"
+        placeholder="Hora de inicio (ejemplo: 10:00)"
         value={horaInicio}
         onChangeText={setHoraInicio}
       />
       <TextInput
         style={styles.input}
-        placeholder="Hora de fin (ej. 12:30)"
+        placeholder="Hora de fin (ejemplo: 12:30)"
         value={horaFin}
         onChangeText={setHoraFin}
       />
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.submitButton} onPress={handleFormSubmit}>
-          <Text style={styles.buttonText}>Crear evento</Text>
+          <Text style={styles.buttonText}>Crear Evento</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
           <Text style={styles.buttonText}>Cancelar</Text>
@@ -112,13 +129,13 @@ const styles = StyleSheet.create({
   submitButton: {
     paddingVertical: 10,
     paddingHorizontal: 20,
-    backgroundColor: 'green',
+    backgroundColor: '#4CAF50',
     borderRadius: 5,
   },
   cancelButton: {
     paddingVertical: 10,
     paddingHorizontal: 20,
-    backgroundColor: 'red',
+    backgroundColor: '#F44336',
     borderRadius: 5,
   },
   buttonText: {
