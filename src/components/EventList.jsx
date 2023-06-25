@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import EventCard from './EventCard';
+import UserContext from '../data/userContext.js';
 
 const EventList = ({ eventos, onPressEvent }) => {
+  const { theme } = useContext(UserContext);
+  const { textColor } = theme;
+
   const handleEventPress = (evento) => {
     onPressEvent(evento);
   };
@@ -19,7 +23,9 @@ const EventList = ({ eventos, onPressEvent }) => {
           </TouchableOpacity>
         ))
       ) : (
-        <Text style={{ marginTop: 8 }}>No hay eventos para esta fecha.</Text>
+        <Text style={{ marginTop: 8, color: textColor }}>
+          No hay eventos para esta fecha.
+        </Text>
       )}
     </View>
   );

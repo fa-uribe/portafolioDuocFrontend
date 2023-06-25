@@ -1,7 +1,9 @@
 import React, { useState, useContext, useEffect } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Modal, BackHandler, Alert, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Modal, BackHandler, Alert, ScrollView, ActivityIndicator} from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CommonActions } from '@react-navigation/native';
+import PushNotification from 'react-native-push-notification';
 
 import moment from "moment/moment";
 import axios, { API_URL } from "../data/apiConfig.js";
@@ -13,7 +15,8 @@ import EventList from './EventList.jsx';
 import EventDetails from './EventDetails.jsx';
 
 const Main = ({ navigation }) => {
-  const { user, updateUser } = useContext(UserContext)
+  const { user, updateUser, theme } = useContext(UserContext);
+  const { backgroundColor, textColor } = theme;
   const [isModalVisible, setModalVisible] = useState(false);
   const [eventData, setEventData] = useState(null);
   const [eventos, setEventos] = useState([]);
@@ -169,16 +172,23 @@ const Main = ({ navigation }) => {
     setEventDetailsVisible(false);
   };
 
+  const handleSettingsPress = () => {
+    navigation.navigate('Settings');
+  };
+
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor }]}>
+       <TouchableOpacity style={styles.settingsButton} onPress={handleSettingsPress}>
+        <Icon name="gear" size={24} color={textColor}/>
+      </TouchableOpacity>
       <ScrollView style={styles.eventosContainer}>
-        <Text style={styles.bienvenida}>¡Bienvenido, {user && user.username}!</Text>
+        <Text style={[styles.bienvenida, { color: textColor }]}>¡Bienvenido, {user && user.username}!</Text>
 
         <CalendarScreen eventos={eventos} onDayPress={handleDayPress} />
 
         {isLoadingEvents ? (
-          <ActivityIndicator style={{marginTop: 15}} size="large" color="#0000ff" />
+          <ActivityIndicator style={{marginTop: 15}} size="large" color={textColor} />
         ) : (
           <EventList eventos={eventosDelDia} onPressEvent={handleEventCardPress} />
         )}
@@ -269,6 +279,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 10,
     padding: 20,
+  },
+  settingsButton: {
+    position: 'absolute',
+    marginTop: 25,
+    top: 10,
+    right: 10,
+    zIndex: 1,
+    padding: 10,
   },
 });
 

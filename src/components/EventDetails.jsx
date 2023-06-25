@@ -8,7 +8,7 @@ const EventDetails = ({ evento, onClose, onDelete }) => {
   };
 
   const handleEdit = () => {
-    // Lógica para editar el evento
+    
   };
 
   const handleDelete = () => {

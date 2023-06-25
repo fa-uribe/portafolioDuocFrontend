@@ -40,7 +40,7 @@ const RegisterScreen = ({navigation}) => {
         else {
             const registerUser = await axios.post(`${API_URL}/auth/signup`, { username, email, password, career });
             
-            navigation.navigate('Main');
+            navigation.navigate('Login');
             setUsername('');
             setEmail('');
             setPassword('');
