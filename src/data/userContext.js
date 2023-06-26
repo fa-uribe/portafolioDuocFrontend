@@ -3,7 +3,7 @@ import React, { createContext, useState } from 'react';
 const UserContext = createContext();
 
 export const darkTheme = {
-  backgroundColor: 'black',
+  backgroundColor: '#343434',
   textColor: 'white',
 };
 

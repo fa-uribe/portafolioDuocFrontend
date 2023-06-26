@@ -1,16 +1,13 @@
-import React, { useState, useContext, useEffect } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Modal, BackHandler, Alert, ScrollView, ActivityIndicator} from 'react-native';
+import React, { useState, useContext, useEffect } from 'react';
+import {  View, Text, TouchableOpacity, StyleSheet, Modal, BackHandler, Alert, ScrollView, ActivityIndicator, ToastAndroid } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { CommonActions } from '@react-navigation/native';
-import PushNotification from 'react-native-push-notification';
 
-import moment from "moment/moment";
-import axios, { API_URL } from "../data/apiConfig.js";
+import moment from 'moment/moment';
+import axios, { API_URL } from '../data/apiConfig.js';
 
-import UserContext from "../data/userContext.js";
-import CalendarScreen from "./CalendarScreen.jsx";
-import CrearEventoForm from "./CreateEvent.jsx";
+import UserContext from '../data/userContext.js';
+import CalendarScreen from './CalendarScreen.jsx';
+import CrearEventoForm from './CreateEvent.jsx';
 import EventList from './EventList.jsx';
 import EventDetails from './EventDetails.jsx';
 
@@ -27,37 +24,45 @@ const Main = ({ navigation }) => {
   const [isEventDetailsVisible, setEventDetailsVisible] = useState(false);
   const [refreshFlag, setRefreshFlag] = useState(false);
   const [isLoadingEvents, setIsLoadingEvents] = useState(false);
+  const [backPressCount, setBackPressCount] = useState(0);
+
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackPress);
+
+    return () => backHandler.remove();
+  }, []);
 
   useEffect(() => {
     obtenerEventos();
   }, []);
 
   useEffect(() => {
-    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-      if (isModalVisible) {
-        closeModal();
-        return true;
-      } else {
-        Alert.alert(
-          'Cerrar sesión',
-          '¿Estás seguro de que deseas cerrar sesión?',
-          [
-            { text: 'Cancelar', style: 'cancel' },
-            {
-              text: 'Salir',
-              onPress: () => {
-                signOut();
-              },
-            },
-          ],
-          { cancelable: false }
-        );
-        return true;
-      }
-    });
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackPress);
 
     return () => backHandler.remove();
-  }, [isModalVisible]);
+  }, []);
+
+  const handleBackPress = () => {
+    if (isEventDetailsVisible) {
+      setEventDetailsVisible(false);
+      return true;
+    } else if (isModalVisible) {
+      setModalVisible(false);
+      return true;
+    } else {
+      if (backPressCount === 0) {
+        setBackPressCount(1);
+        ToastAndroid.show('Presiona "Atrás" nuevamente para salir', ToastAndroid.SHORT);
+        setTimeout(() => {
+          setBackPressCount(0);
+        }, 2000);
+        return true;
+      } else if (backPressCount === 1) {
+        BackHandler.exitApp();
+        return false;
+      }
+    }
+  };
 
   const obtenerEventos = async () => {
     try {
@@ -66,17 +71,17 @@ const Main = ({ navigation }) => {
 
       setEventos(eventosData);
       setIsLoadingEvents(true);
-      const todayEvents = await fetchEventosDelDia(selectedDate)
+      const todayEvents = await fetchEventosDelDia(selectedDate);
       setEventosDelDia(todayEvents);
       setIsLoadingEvents(false);
 
       const updatedMarkedDates = {};
       eventosData.forEach((evento) => {
-        const date = moment(evento.event_date).format('YYYY-MM-DD'); 
+        const date = moment(evento.event_date).format('YYYY-MM-DD');
         updatedMarkedDates[date] = {
           marked: true,
-          dotColor: 'blue', 
-          evento: evento, 
+          dotColor: 'blue',
+          evento: evento,
         };
       });
       setMarkedDates(updatedMarkedDates);
@@ -88,16 +93,12 @@ const Main = ({ navigation }) => {
 
   const handleCrearEvento = () => {
     const today = moment().format('YYYY-MM-DD');
-  
+
     if (selectedDate < today) {
-      Alert.alert(
-        'Fecha inválida',
-        'No puedes crear un evento para una fecha anterior a hoy.',
-        [{ text: 'OK' }]
-      );
+      Alert.alert('Fecha inválida', 'No puedes crear un evento para una fecha anterior a hoy.', [{ text: 'OK' }]);
       return;
     }
-  
+
     setModalVisible(true);
   };
 
@@ -106,15 +107,9 @@ const Main = ({ navigation }) => {
     obtenerEventos();
   };
 
-  const closeModal = () => {
-    setModalVisible(false);
-  };
-
   const handleDeleteEvent = async (eventId) => {
     try {
-      
       await axios.delete(`${API_URL}/user/deleteEvent/${eventId}`);
-      
       obtenerEventos();
     } catch (error) {
       console.log('Error al eliminar el evento:', error);
@@ -122,26 +117,10 @@ const Main = ({ navigation }) => {
     }
   };
 
-  const signOut = async () => {
-    try {
-      await AsyncStorage.clear();
-    } catch (error) {
-      console.log('Error al limpiar el almacenamiento:', error);
-    }
-    updateUser(null);
-
-    navigation.dispatch(
-      CommonActions.reset({
-        index: 0,
-        routes: [{ name: 'Login' }],
-      })
-    );
-  };
-
   const handleDayPress = async (selected) => {
     const fechaSeleccionada = selected.dateString;
     setSelectedDate(fechaSeleccionada);
-    setIsLoadingEvents(true); 
+    setIsLoadingEvents(true);
     const eventosDelDia = await fetchEventosDelDia(fechaSeleccionada);
     setEventosDelDia(eventosDelDia);
     setIsLoadingEvents(false);
@@ -153,9 +132,7 @@ const Main = ({ navigation }) => {
     }
 
     try {
-      const response = await axios.get(
-        `${API_URL}/user/getDailyEvents/${fechaSeleccionada}`
-      );
+      const response = await axios.get(`${API_URL}/user/getDailyEvents/${fechaSeleccionada}`);
       return response.data;
     } catch (error) {
       console.log('Error al obtener eventos del día:', error);
@@ -176,11 +153,10 @@ const Main = ({ navigation }) => {
     navigation.navigate('Settings');
   };
 
-
   return (
     <View style={[styles.container, { backgroundColor }]}>
-       <TouchableOpacity style={styles.settingsButton} onPress={handleSettingsPress}>
-        <Icon name="gear" size={24} color={textColor}/>
+      <TouchableOpacity style={styles.settingsButton} onPress={handleSettingsPress}>
+        <Icon name="gear" size={24} color={textColor} />
       </TouchableOpacity>
       <ScrollView style={styles.eventosContainer}>
         <Text style={[styles.bienvenida, { color: textColor }]}>¡Bienvenido, {user && user.username}!</Text>
@@ -188,25 +164,24 @@ const Main = ({ navigation }) => {
         <CalendarScreen eventos={eventos} onDayPress={handleDayPress} />
 
         {isLoadingEvents ? (
-          <ActivityIndicator style={{marginTop: 15}} size="large" color={textColor} />
+          <ActivityIndicator style={{ marginTop: 15 }} size="large" color={textColor} />
         ) : (
           <EventList eventos={eventosDelDia} onPressEvent={handleEventCardPress} />
         )}
-
       </ScrollView>
 
       {selectedDate && (
         <View style={styles.buttonContainer}>
           <TouchableOpacity onPress={handleCrearEvento} style={styles.button}>
             <Text style={styles.buttonText}>
-              {selectedDate ? `Crear evento para ${selectedDate}` : "Agregar evento"}
+              {selectedDate ? `Crear evento para ${selectedDate}` : 'Agregar evento'}
             </Text>
           </TouchableOpacity>
         </View>
       )}
 
       <Modal visible={isModalVisible} animationType="slide">
-        <CrearEventoForm onClose={closeModal} onSubmit={handleFormSubmit} selectedDate={selectedDate} />
+        <CrearEventoForm onClose={() => setModalVisible(false)} onSubmit={handleFormSubmit} selectedDate={selectedDate} />
       </Modal>
 
       {selectedEvent && (
@@ -240,7 +215,7 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     fontSize: 18,
     fontWeight: 'bold',
-    marginTop: 40
+    marginTop: 40,
   },
   eventosContainer: {
     flex: 1,
@@ -252,7 +227,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: '100%',
     paddingHorizontal: 16,
-    marginBottom: 10,
+    marginBottom: 15,
     zIndex: 1,
   },
   button: {
@@ -275,14 +250,15 @@ const styles = StyleSheet.create({
   },
   modalBackground: {
     width: 300,
-    height: 400, 
+    height: 400,
     backgroundColor: 'white',
     borderRadius: 10,
     padding: 20,
   },
   settingsButton: {
     position: 'absolute',
-    marginTop: 25,
+    marginTop: 32,
+    marginRight: 15,
     top: 10,
     right: 10,
     zIndex: 1,
