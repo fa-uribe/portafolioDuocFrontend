@@ -1,9 +1,9 @@
 import React, { useState, useContext } from 'react';
 import { View, TextInput, TouchableOpacity, StyleSheet, Text, Button, Image, Alert } from 'react-native';
-import axios, { API_URL } from '../data/apiConfig.js';
+import axios, { API_URL } from '../../data/apiConfig.js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
-import UserContext from '../data/userContext.js'
+import UserContext from '../../data/userContext.js'
 ;
 const LoginScreen = ({ updateUser, navigation }) => {
   const [email, setEmail] = useState('');

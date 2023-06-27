@@ -25,4 +25,4 @@ axios.interceptors.request.use(async (config) => {
 
 export default axios;
 
-export const API_URL = 'http://192.168.100.8:8080/myEstCalendarAPI';
+export const API_URL = 'http://ec2-52-67-153-193.sa-east-1.compute.amazonaws.com:8080/myEstCalendarAPI';

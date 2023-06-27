@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, TextInput, TouchableOpacity, Text, StyleSheet, Alert } from 'react-native';
-import axios, { API_URL } from '../data/apiConfig.js';
+import axios, { API_URL } from '../../data/apiConfig.js';
+import UserContext from '../../data/userContext.js';
 
 const CrearEventoForm = ({ onClose, onSubmit, selectedDate }) => {
+  const { theme } = useContext(UserContext);
+  const { textColor, backgroundColor } = theme;
   const [nombre, setNombre] = useState('');
   const [descripcion, setDescripcion] = useState('');
   const [horaInicio, setHoraInicio] = useState('');
@@ -64,29 +67,35 @@ const CrearEventoForm = ({ onClose, onSubmit, selectedDate }) => {
   const formattedDate = selectedDate ?? '';
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Creando evento para: {selectedDate}</Text>
+    <View style={[styles.container, { backgroundColor }]}>
+      <Text style={[styles.title, { color: textColor }]}>
+        Creando evento para: {selectedDate}
+      </Text>
       <TextInput
-        style={styles.input}
+        style={[styles.input, { color: textColor, borderColor: textColor }]}
         placeholder="Nombre evento"
+        placeholderTextColor={textColor}
         value={nombre}
         onChangeText={setNombre}
       />
       <TextInput
-        style={styles.input}
+        style={[styles.input, { color: textColor, borderColor: textColor }]}
         placeholder="Descripción"
+        placeholderTextColor={textColor} 
         value={descripcion}
         onChangeText={setDescripcion}
       />
       <TextInput
-        style={styles.input}
+        style={[styles.input, { color: textColor, borderColor: textColor }]}
         placeholder="Hora de inicio (ejemplo: 10:00)"
+        placeholderTextColor={textColor} 
         value={horaInicio}
         onChangeText={setHoraInicio}
       />
       <TextInput
-        style={styles.input}
+        style={[styles.input, { color: textColor, borderColor: textColor }]}
         placeholder="Hora de fin (ejemplo: 12:30)"
+        placeholderTextColor={textColor}
         value={horaFin}
         onChangeText={setHoraFin}
       />
