@@ -61,6 +61,7 @@ const CalendarScreen = ({ eventos, onDayPress, obtenerEventos }) => {
 
   const updateMarkedDates = (updatedMarkedDates) => {
     obtenerEventos();
+    handleDateSelect();
     setMarkedDates(updatedMarkedDates);
   };
   

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, TextInput, TouchableOpacity, Text, StyleSheet, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import axios, { API_URL } from '../../data/apiConfig.js';
+import axios, { API_URL } from '../data/apiConfig.js';
 
 const EventDetails = ({ evento, onClose, updateCalendar }) => {
   const [editMode, setEditMode] = useState(false);

@@ -6,10 +6,10 @@ import moment from 'moment/moment';
 import axios, { API_URL } from '../data/apiConfig.js';
 
 import UserContext from '../data/userContext.js';
-import CalendarScreen from './calendar/CalendarScreen.jsx';
-import CrearEventoForm from './events/CreateEvent.jsx';
-import EventList from './events/EventList.jsx';
-import EventDetails from './events/EventDetails.jsx';
+import CalendarScreen from './CalendarScreen.jsx';
+import CrearEventoForm from './CreateEvent.jsx';
+import EventList from './EventList.jsx';
+import EventDetails from './EventDetails.jsx';
 
 const Main = ({ navigation }) => {
   const { user, updateUser, theme } = useContext(UserContext);
@@ -46,21 +46,25 @@ const Main = ({ navigation }) => {
     if (isEventDetailsVisible) {
       setEventDetailsVisible(false);
       return true;
-    } else if (isModalVisible) {
+    }
+    
+    if (isModalVisible) {
       setModalVisible(false);
       return true;
-    } else {
-      if (backPressCount === 0) {
-        setBackPressCount(1);
-        ToastAndroid.show('Presiona "Atrás" nuevamente para salir', ToastAndroid.SHORT);
-        setTimeout(() => {
-          setBackPressCount(0);
-        }, 2000);
-        return true;
-      } else if (backPressCount === 1) {
-        BackHandler.exitApp();
-        return false;
-      }
+    }
+  
+    if (backPressCount === 0) {
+      setBackPressCount(1);
+      ToastAndroid.show('Presiona "Atrás" nuevamente para salir', ToastAndroid.SHORT);
+      setTimeout(() => {
+        setBackPressCount(0);
+      }, 2000);
+      return true;
+    }
+  
+    if (backPressCount === 1) {
+      BackHandler.exitApp();
+      return false;
     }
   };
 

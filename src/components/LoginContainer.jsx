@@ -1,6 +1,6 @@
 import React from 'react';
-import UserContext from '../../data/userContext.js';
-import Login from '../components/Login.jsx';
+import UserContext from '../data/userContext.js';
+import Login from './Login.jsx';
 
 const LoginContainer = ({ navigation }) => {
   return (
