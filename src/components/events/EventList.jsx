@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import EventCard from './EventCard';
-import UserContext from '../data/userContext.js';
+import UserContext from '../../data/userContext.js';
 
 const EventList = ({ eventos, onPressEvent }) => {
   const { theme } = useContext(UserContext);

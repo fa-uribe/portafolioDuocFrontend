@@ -6,10 +6,10 @@ import moment from 'moment/moment';
 import axios, { API_URL } from '../data/apiConfig.js';
 
 import UserContext from '../data/userContext.js';
-import CalendarScreen from './CalendarScreen.jsx';
-import CrearEventoForm from './CreateEvent.jsx';
-import EventList from './EventList.jsx';
-import EventDetails from './EventDetails.jsx';
+import CalendarScreen from './calendar/CalendarScreen.jsx';
+import CrearEventoForm from './events/CreateEvent.jsx';
+import EventList from './events/EventList.jsx';
+import EventDetails from './events/EventDetails.jsx';
 
 const Main = ({ navigation }) => {
   const { user, updateUser, theme } = useContext(UserContext);
@@ -18,7 +18,7 @@ const Main = ({ navigation }) => {
   const [eventData, setEventData] = useState(null);
   const [eventos, setEventos] = useState([]);
   const [eventosDelDia, setEventosDelDia] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(moment().format('YYYY-MM-DD'));
+  const [selectedDate, setSelectedDate] = useState(moment().format('DD-MM-YYYY'));
   const [markedDates, setMarkedDates] = useState({});
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [isEventDetailsVisible, setEventDetailsVisible] = useState(false);
@@ -71,7 +71,7 @@ const Main = ({ navigation }) => {
 
       setEventos(eventosData);
       setIsLoadingEvents(true);
-      const todayEvents = await fetchEventosDelDia(selectedDate);
+      const todayEvents = await fetchEventosDelDia(moment(selectedDate).format('DD-MM-YYYY'));
       setEventosDelDia(todayEvents);
       setIsLoadingEvents(false);
 
@@ -80,7 +80,7 @@ const Main = ({ navigation }) => {
         const date = moment(evento.event_date).format('YYYY-MM-DD');
         updatedMarkedDates[date] = {
           marked: true,
-          dotColor: 'blue',
+          dotColor: 'red',
           evento: evento,
         };
       });
@@ -92,7 +92,7 @@ const Main = ({ navigation }) => {
   };
 
   const handleCrearEvento = () => {
-    const today = moment().format('YYYY-MM-DD');
+    const today = moment().format('DD-MM-YYYY');
 
     if (selectedDate < today) {
       Alert.alert('Fecha inválida', 'No puedes crear un evento para una fecha anterior a hoy.', [{ text: 'OK' }]);
@@ -118,7 +118,7 @@ const Main = ({ navigation }) => {
   };
 
   const handleDayPress = async (selected) => {
-    const fechaSeleccionada = selected.dateString;
+    const fechaSeleccionada = moment(selected.dateString).format('DD-MM-YYYY');
     setSelectedDate(fechaSeleccionada);
     setIsLoadingEvents(true);
     const eventosDelDia = await fetchEventosDelDia(fechaSeleccionada);
@@ -223,7 +223,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   buttonContainer: {
-    //position: 'sticky',
     bottom: 0,
     width: '100%',
     paddingHorizontal: 16,

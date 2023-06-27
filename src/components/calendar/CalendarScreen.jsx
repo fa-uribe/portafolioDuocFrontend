@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View } from 'react-native';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 
-const CalendarScreen = ({ eventos, onDayPress }) => {
+const CalendarScreen = ({ eventos, onDayPress, obtenerEventos }) => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [markedDates, setMarkedDates] = useState({});
 
@@ -58,6 +58,11 @@ const CalendarScreen = ({ eventos, onDayPress }) => {
       setMarkedDates(updatedMarkedDates);
     }
   }, [selectedDate]);
+
+  const updateMarkedDates = (updatedMarkedDates) => {
+    obtenerEventos();
+    setMarkedDates(updatedMarkedDates);
+  };
   
 
   LocaleConfig.locales['es'] = {

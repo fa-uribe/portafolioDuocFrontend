@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { View, TextInput, Button, StyleSheet, Alert, Text } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import axios, { API_URL } from '../data/apiConfig.js';
+import axios, { API_URL } from '../../data/apiConfig.js';
 
 const RegisterScreen = ({navigation}) => {
   const [username, setUsername] = useState('');
@@ -54,6 +54,9 @@ const RegisterScreen = ({navigation}) => {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.title}>
+        Registrar nuevo usuario
+      </Text>
       <TextInput
         style={styles.input}
         placeholder="Nombre de usuario"
@@ -94,6 +97,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
   },
   input: {
     height: 40,

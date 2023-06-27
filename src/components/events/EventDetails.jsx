@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { View, TextInput, TouchableOpacity, Text, StyleSheet, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import axios, { API_URL } from '../data/apiConfig.js';
+import axios, { API_URL } from '../../data/apiConfig.js';
 
-const EventDetails = ({ evento, onClose, onDelete, onEdit }) => {
+const EventDetails = ({ evento, onClose, updateCalendar }) => {
   const [editMode, setEditMode] = useState(false);
   const [editedEvento, setEditedEvento] = useState({ ...evento });
 
@@ -17,10 +17,11 @@ const EventDetails = ({ evento, onClose, onDelete, onEdit }) => {
 
   const handleSave = async () => {
     try {
-      const response = await axios.put(`${API_URL}/calendar/editEvent/${evento._id}`, editedEvento);
+      const response = await axios.put(`${API_URL}/user/editEvent/${evento._id}`, editedEvento);
       Alert.alert('Éxito', 'El evento se editó exitosamente.');
-      onEdit(editedEvento);
       setEditMode(false);
+      onClose();
+      updateCalendar();
     } catch (error) {
       Alert.alert('Error', 'No se pudo editar el evento.');
     }
@@ -30,7 +31,7 @@ const EventDetails = ({ evento, onClose, onDelete, onEdit }) => {
     setEditMode(false);
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     Alert.alert(
       'Eliminar evento',
       '¿Estás seguro de que deseas eliminar este evento?',
@@ -41,24 +42,22 @@ const EventDetails = ({ evento, onClose, onDelete, onEdit }) => {
         },
         {
           text: 'Confirmar',
-          onPress: () => {
-            axios
-              .delete(`/calendar/deleteEvent/${evento._id}`)
-              .then(response => {
-                Alert.alert('Éxito', 'El evento se eliminó exitosamente.');
-                onDelete(evento._id);
-                onClose();
-              })
-              .catch(error => {
-                Alert.alert('Error', 'No se pudo eliminar el evento.');
-              });
+          onPress: async () => {
+            try {
+              const response = await axios.delete(`${API_URL}/user/deleteEvent/${evento._id}`);
+              Alert.alert('Éxito', 'El evento se eliminó exitosamente.');
+              onClose();
+              updateCalendar();
+            } catch (error) {
+              Alert.alert('Error', 'No se pudo eliminar el evento.');
+            }
           },
         },
       ],
       { cancelable: false }
     );
   };
-
+  
   const handleChangeEventName = (text) => {
     setEditedEvento({ ...editedEvento, event_name: text });
   };
@@ -201,6 +200,7 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderRadius: 5,
     width: '100%',
+    height: 40, // Establecer un tamaño fijo para los campos de entrada
   },
 });
 

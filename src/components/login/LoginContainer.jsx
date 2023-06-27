@@ -1,5 +1,5 @@
 import React from 'react';
-import UserContext from '../data/userContext.js';
+import UserContext from '../../data/userContext.js';
 import Login from '../components/Login.jsx';
 
 const LoginContainer = ({ navigation }) => {
