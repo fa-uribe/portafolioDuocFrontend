@@ -18,7 +18,7 @@ const Main = ({ navigation }) => {
   const [eventData, setEventData] = useState(null);
   const [eventos, setEventos] = useState([]);
   const [eventosDelDia, setEventosDelDia] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(moment().format('DD-MM-YYYY'));
+  const [selectedDate, setSelectedDate] = useState(moment().format('YYYY-MM-DD'));
   const [markedDates, setMarkedDates] = useState({});
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [isEventDetailsVisible, setEventDetailsVisible] = useState(false);
@@ -36,35 +36,24 @@ const Main = ({ navigation }) => {
     obtenerEventos();
   }, []);
 
-  useEffect(() => {
-    const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackPress);
-
-    return () => backHandler.remove();
-  }, []);
-
   const handleBackPress = () => {
     if (isEventDetailsVisible) {
       setEventDetailsVisible(false);
       return true;
-    }
-    
-    if (isModalVisible) {
+    } else if (isModalVisible) {
       setModalVisible(false);
       return true;
-    }
-  
-    if (backPressCount === 0) {
-      setBackPressCount(1);
-      ToastAndroid.show('Presiona "Atrás" nuevamente para salir', ToastAndroid.SHORT);
-      setTimeout(() => {
-        setBackPressCount(0);
-      }, 2000);
-      return true;
-    }
-  
-    if (backPressCount === 1) {
-      BackHandler.exitApp();
-      return false;
+    } else {
+      if (backPressCount === 0) {
+        setBackPressCount(1);
+        ToastAndroid.show('Presiona "Atrás" nuevamente para salir', ToastAndroid.SHORT);
+        setTimeout(() => {
+          setBackPressCount(0);
+        }, 2000);
+        return true;
+      } else if (backPressCount === 1) {
+        BackHandler.exitApp();
+      }
     }
   };
 
@@ -75,20 +64,10 @@ const Main = ({ navigation }) => {
 
       setEventos(eventosData);
       setIsLoadingEvents(true);
-      const todayEvents = await fetchEventosDelDia(moment(selectedDate).format('DD-MM-YYYY'));
+      const todayEvents = await fetchEventosDelDia(selectedDate);
       setEventosDelDia(todayEvents);
       setIsLoadingEvents(false);
 
-      const updatedMarkedDates = {};
-      eventosData.forEach((evento) => {
-        const date = moment(evento.event_date).format('YYYY-MM-DD');
-        updatedMarkedDates[date] = {
-          marked: true,
-          dotColor: 'red',
-          evento: evento,
-        };
-      });
-      setMarkedDates(updatedMarkedDates);
       setRefreshFlag(!refreshFlag);
     } catch (error) {
       console.log('Error al obtener eventos:', error);
@@ -96,7 +75,7 @@ const Main = ({ navigation }) => {
   };
 
   const handleCrearEvento = () => {
-    const today = moment().format('DD-MM-YYYY');
+    const today = moment().format('YYYY-MM-DD');
 
     if (selectedDate < today) {
       Alert.alert('Fecha inválida', 'No puedes crear un evento para una fecha anterior a hoy.', [{ text: 'OK' }]);
@@ -122,7 +101,7 @@ const Main = ({ navigation }) => {
   };
 
   const handleDayPress = async (selected) => {
-    const fechaSeleccionada = moment(selected.dateString).format('DD-MM-YYYY');
+    const fechaSeleccionada = selected.dateString;
     setSelectedDate(fechaSeleccionada);
     setIsLoadingEvents(true);
     const eventosDelDia = await fetchEventosDelDia(fechaSeleccionada);
@@ -178,7 +157,7 @@ const Main = ({ navigation }) => {
         <View style={styles.buttonContainer}>
           <TouchableOpacity onPress={handleCrearEvento} style={styles.button}>
             <Text style={styles.buttonText}>
-              {selectedDate ? `Crear evento para ${selectedDate}` : 'Agregar evento'}
+              {selectedDate ? `Crear evento para ${moment(selectedDate).format('DD-MM-YYYY')}` : 'Agregar evento'}
             </Text>
           </TouchableOpacity>
         </View>
@@ -230,7 +209,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: '100%',
     paddingHorizontal: 16,
-    marginBottom: 15,
+    marginBottom: 10,
     zIndex: 1,
   },
   button: {
@@ -260,8 +239,8 @@ const styles = StyleSheet.create({
   },
   settingsButton: {
     position: 'absolute',
-    marginTop: 32,
-    marginRight: 15,
+    marginTop: 30,
+    marginRight: 8,
     top: 10,
     right: 10,
     zIndex: 1,

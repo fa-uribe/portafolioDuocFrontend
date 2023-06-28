@@ -19,20 +19,24 @@ const LoginScreen = ({ updateUser, navigation }) => {
       Alert.alert('Error', 'Por favor ingresa un correo electrónico y contraseña');
       return;
     }
-    try{
+  
+    try {
       const response = await axios.post(`${API_URL}/auth/signin`, { email, password });
-      const token = response.data.token;
-      const userData = response.data.userData[0];
-      await storage.setItem('token', token);
-      userContext.updateUser(userData);
+      const { status, data } = response;
+      const token = data.token;
+      const userData = data.userData[0];
       
-      navigation.navigate('Main');
-      setEmail('');
-      setPassword('');
-
-    }
-    catch(error){
-      Alert.alert('error', error);
+      if (status === 200) {
+        await storage.setItem('token', token);
+        userContext.updateUser(userData);
+        navigation.navigate('Main');
+        setEmail('');
+        setPassword('');
+      } else if (status === 404) {
+        Alert.alert('Error', 'El usuario no existe');
+      }
+    } catch (error) {
+      Alert.alert('Error', error.message);
     }
   }
 
